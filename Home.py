@@ -11,9 +11,21 @@ import plotly.graph_objs as go
 #uncomment this line if you use mysql
 #from query import *
 
-st.set_page_config(page_title="Dashboard",page_icon="🌍",layout="wide")
+st.set_page_config(page_title="Dashboard",page_icon="🌍",layout="wide",)
 st.header("ANALYTICAL PROCESSING, KPI, TRENDS & PREDICTIONS")
 
+background_image = """
+<style>
+[data-testid="stAppViewContainer"] > .main {
+    background-image: url("https://wallpapercave.com/wp/wp9556135.jpg");
+    background-size: 100vw 100vh;  # This sets the size to cover 100% of the viewport width and height
+    background-position: center;  
+    background-repeat: no-repeat;
+}
+</style>
+"""
+
+st.markdown(background_image, unsafe_allow_html=True)
 #all graphs we use custom css not streamlit 
 theme_plotly = None 
 
@@ -56,9 +68,28 @@ df_selection=df.query(
 
 #this function performs basic descriptive analytics like Mean,Mode,Sum  etc
 def Home():
+    # st.markdown(
+    # '''
+    # <style>
+    # .streamlit-expanderHeader {
+    #     background-color: white;
+    #     color: black; # Adjust this for expander header color
+    # }
+    # .streamlit-expanderContent {
+    #     background-color: white;
+    #     color: black; # Expander content color
+    # }
+    # </style>
+    # ''',
+    # unsafe_allow_html=True
+    # )
+
     with st.expander("VIEW EXCEL DATASET"):
         showData=st.multiselect('Filter: ',df_selection.columns,default=["Policy","Expiry","Location","State","Region","Investment","Construction","BusinessType","Earthquake","Flood","Rating"])
         st.dataframe(df_selection[showData],use_container_width=True)
+    with st.expander("DISTRIBUTIONS BY FREQUENCY"):
+        df.hist(figsize=(16,8),color='#898784', zorder=2, rwidth=0.9,legend = ['Investment']);
+        st.pyplot()
     #compute top analytics
     total_investment = float(pd.Series(df_selection['Investment']).sum())
     investment_mode = float(pd.Series(df_selection['Investment']).mode())
@@ -67,32 +98,35 @@ def Home():
     rating = float(pd.Series(df_selection['Rating']).sum())
 
 
-    total1,total2,total3,total4,total5=st.columns(5,gap='small')
+    total1,total2,total3=st.columns(3,gap='small')
     with total1:
-        st.info('Sum Investment',icon="💰")
+        # st.info('Sum Investment',icon="💰")
         st.metric(label="Sum TZS",value=f"{total_investment:,.0f}")
 
-    with total2:
-        st.info('Most Investment',icon="💰")
-        st.metric(label="Mode TZS",value=f"{investment_mode:,.0f}")
-
-    with total3:
-        st.info('Average',icon="💰")
-        st.metric(label="Average TZS",value=f"{investment_mean:,.0f}")
-
-    with total4:
-        st.info('Central Earnings',icon="💰")
         st.metric(label="Median TZS",value=f"{investment_median:,.0f}")
 
-    with total5:
-        st.info('Ratings',icon="💰")
-        st.metric(label="Rating",value=numerize(rating),help=f""" Total Rating: {rating} """)
-    style_metric_cards(background_color="#FFFFFF",border_left_color="#686664",border_color="#000000",box_shadow="#F71938")
+    with total2:
+        # st.info('Most Investment',icon="💰")
+        st.metric(label="Mode TZS",value=f"{investment_mode:,.0f}")
+
+        st.metric(label="Rating",value=numerize(rating),help=f""" Total Rating: {rating} """)   
+
+    with total3:
+        # st.info('Average',icon="💰")
+        st.metric(label="Average TZS",value=f"{investment_mean:,.0f}")
+
+
+    # with total4:
+    #     # st.info('Central Earnings',icon="💰")
+    #     st.metric(label="Median TZS",value=f"{investment_median:,.0f}")
+
+    # with total5:
+    #     # st.info('Ratings',icon="💰")
+    #     st.metric(label="Rating",value=numerize(rating),help=f""" Total Rating: {rating} """)
+    style_metric_cards(background_color="rgba(0, 0, 0, 0.5)",border_left_color=False,border_color="#000000",box_shadow="#F71938",border_radius_px=10)
 
     #variable distribution Histogram
-    with st.expander("DISTRIBUTIONS BY FREQUENCY"):
-     df.hist(figsize=(16,8),color='#898784', zorder=2, rwidth=0.9,legend = ['Investment']);
-     st.pyplot()
+
 
 #graphs
 def graphs():
@@ -113,9 +147,9 @@ def graphs():
     )
     fig_investment.update_layout(
      plot_bgcolor="rgba(0,0,0,0)",
-     font=dict(color="black"),
+     font=dict(color="white"),
      yaxis=dict(showgrid=True, gridcolor='#cecdcd'),  # Show y-axis grid and set its color  
-     paper_bgcolor='rgba(0, 0, 0, 0)',  # Set paper background color to transparent
+     paper_bgcolor='rgba(0, 0, 0, 0.5)',  # Set paper background color to transparent
      xaxis=dict(showgrid=True, gridcolor='#cecdcd'),  # Show x-axis grid and set its color
      )
 
@@ -133,7 +167,8 @@ def graphs():
     fig_state.update_layout(
     xaxis=dict(tickmode="linear"),
     plot_bgcolor="rgba(0,0,0,0)",
-    yaxis=(dict(showgrid=False))
+    yaxis=(dict(showgrid=False)),
+    paper_bgcolor='rgba(0, 0, 0, 0.5)'
      )
 
     left,right,center=st.columns(3)
@@ -143,7 +178,7 @@ def graphs():
     with center:
       #pie chart
       fig = px.pie(df_selection, values='Rating', names='State', title='RATINGS BY REGIONS')
-      fig.update_layout(legend_title="Regions", legend_y=0.9)
+      fig.update_layout(legend_title="Regions", legend_y=0.9, paper_bgcolor='rgba(0, 0, 0, 0.5)')
       fig.update_traces(textinfo='percent+label', textposition='inside')
       st.plotly_chart(fig, use_container_width=True, theme=theme_plotly)
 
@@ -183,7 +218,7 @@ def sideBar():
     graphs()
 
 sideBar()
-st.sidebar.image("data/logo1.png",caption="")
+st.sidebar.image("https://image.lag.vn/upload/news/20/08/21/maxresdefault-58_HBCN.jpg",caption="")
 
 
 st.subheader('PICK FEATURES TO EXPLORE DISTRIBUTIONS TRENDS BY QUARTILES',)
@@ -194,7 +229,7 @@ fig2 = go.Figure(
     layout=go.Layout(
         title=go.layout.Title(text="BUSINESS TYPE BY QUARTILES OF INVESTMENT"),
         plot_bgcolor='rgba(0, 0, 0, 0)',  # Set plot background color to transparent
-        paper_bgcolor='rgba(0, 0, 0, 0)',  # Set paper background color to transparent
+        paper_bgcolor='rgba(0, 0, 0, 0.5)',  # Set paper background color to transparent
         xaxis=dict(showgrid=True, gridcolor='#cecdcd'),  # Show x-axis grid and set its color
         yaxis=dict(showgrid=True, gridcolor='#cecdcd'),  # Show y-axis grid and set its color
         font=dict(color='#cecdcd'),  # Set text color to black

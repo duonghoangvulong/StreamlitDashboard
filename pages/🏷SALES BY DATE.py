@@ -16,8 +16,19 @@ st.set_page_config(page_title="Sales", page_icon="🌎", layout="wide")
 
 st.header("SALES ANALYTICS KPI  &  TRENDS  | DESCRIPTIVE ANALYTICS")
 st.write("Pick a date range from sidebar to view sales trends | the default date is today")
+background_image = """
+<style>
+[data-testid="stAppViewContainer"] > .main {
+    background-image: url("https://wallpapercave.com/wp/wp9556135.jpg");
+    background-size: 100vw 100vh;  # This sets the size to cover 100% of the viewport width and height
+    background-position: center;  
+    background-repeat: no-repeat;
+}
+</style>
+"""
 
-#streamlit theme=none
+st.markdown(background_image, unsafe_allow_html=True)
+#all graphs we use custom css not streamlit 
 theme_plotly = None 
 
 # load CSS Style
